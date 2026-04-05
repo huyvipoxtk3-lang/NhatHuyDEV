@@ -1,8 +1,0 @@
-{
-  "Ser": "BOX-VIP-ONLINE-DRAG",
-  "Ma": {
-    "NhatHuyDEV": {
-      "e": "31/12/2099"
-    }
-  }
-}
