@@ -1,0 +1,16 @@
+{
+  "name": "jsbrowser",
+  "version": "1.0.0",
+  "description": "Cloudflare bypass tool",
+  "main": "jsbrowser.js",
+  "scripts": {
+    "start": "node jsbrowser.js"
+  },
+  "dependencies": {
+    "puppeteer-real-browser": "latest",
+    "fingerprint-generator": "latest",
+    "chalk": "latest",
+    "axios": "latest",
+    "colors": "latest"
+  }
+}
