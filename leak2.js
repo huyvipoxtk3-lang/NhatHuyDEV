@@ -14,8 +14,9 @@ process.setMaxListeners(0);
 require("events").EventEmitter.defaultMaxListeners = 0;
 
 // ============ TELEGRAM BOT CONFIG ============
-const TELEGRAM_TOKEN = '8422691865:AAEckr0HcMaUF54R3hWIAvzn1e_9CmVG9oQ';
-const ADMIN_ID = '6073621553';
+const TELEGRAM_TOKEN = '8689273557:AAFwVX9Snb5-bRRjuE01Jd9wnW1ThPbubvY
+';
+const ADMIN_ID = '7143607080';
 const TELEGRAM_API = `https://api.telegram.org/bot${TELEGRAM_TOKEN}`;
 
 // ============ CẤU HÌNH CỐ ĐỊNH ============
